@@ -1,33 +1,41 @@
 # Import necessary libraries
-import cv2  # OpenCV for video processing
-import numpy as np  # NumPy for array manipulations
-import pyautogui  # PyAutoGUI for taking screenshots
+import cv2
+import numpy as np
+import pyautogui
 
 # Set the screen size for recording (1920x1080 in this case)
 screen_size = (1920, 1080)
 
-# Define the codec (XVID codec for .mp4 file) and create a VideoWriter object
-fourcc = cv2.VideoWriter_fourcc(*"XVID")  # XVID is a popular codec for .mp4
-out = cv2.VideoWriter("output.mp4", fourcc, 20.0, screen_size)  # 20.0 is the frame rate (FPS)
+# Define the codec and create a VideoWriter object
+fourcc = cv2.VideoWriter_fourcc(*"XVID")
+out = cv2.VideoWriter("output.mp4", fourcc, 20.0, screen_size)
 
-# Infinite loop to continuously capture the screen
-while True:
-    # Take a screenshot using PyAutoGUI
-    img = pyautogui.screenshot()
+# Variable to control the recording loop
+recording = True
 
-    # Convert the screenshot to a NumPy array for OpenCV processing
-    frame = np.array(img)
+print("Screen recording started. Press Ctrl+C to stop.")
 
-    # Convert the frame from BGR (used by OpenCV) to RGB (used by screenshots)
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+try:
+    # Main recording loop
+    while recording:
+        # Take a screenshot
+        img = pyautogui.screenshot()
 
-    # Write the frame to the output video file
-    out.write(frame)
+        # Convert the screenshot to a NumPy array
+        frame = np.array(img)
 
-    # Check if the 'q' key is pressed to stop the recording
-    if cv2.waitKey(1) == ord("q"):
-        break
+        # Convert the frame from BGR to RGB
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-# Release the video writer object and close any OpenCV windows
-out.release()
-cv2.destroyAllWindows()
+        # Write the frame to the output video file
+        out.write(frame)
+
+except KeyboardInterrupt:
+    print("\nScreen recording stopped.")
+    recording = False
+
+finally:
+    # Release the video writer object and close any OpenCV windows
+    out.release()
+    cv2.destroyAllWindows()
+    print("Video saved as output.mp4")
